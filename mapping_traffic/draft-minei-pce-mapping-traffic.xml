@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd">
+<?rfc toc="yes"?>
+<?rfc tocompact="yes"?>
+<?rfc tocdepth="3"?>
+<?rfc tocindent="yes"?>
+<?rfc symrefs="yes"?>
+<?rfc sortrefs="yes"?>
+<?rfc comments="yes"?>
+<?rfc inline="yes"?>
+<?rfc compact="yes"?>
+<?rfc subcompact="no"?>
+<rfc category="std" docName="draft-minei-pce-traffic-mapping" ipr="trust200902">
+  <front>
+    <title abbrev="Traffic mapping">
+    Enabling Stateful PCE to Tag Label Switched Paths</title>
+
+     <author fullname="Ina Minei" initials="I." surname="Minei">
+      <organization>Juniper Networks, Inc.</organization>
+      <address>
+        <postal>
+          <street>1194 N. Mathilda Ave.</street>
+          <city>Sunnyvale</city>
+          <region>CA</region>
+          <code>94089</code>
+          <country>USA</country>
+        </postal>
+        <email>ina@juniper.net</email>
+      </address>
+    </author>
+	
+	<author fullname="Siva Sivabalan" initials="S." surname="Sivabalan">
+      <organization>Cisco Systems, Inc.</organization>
+      <address>
+        <postal>
+          <street>2000 Innovation Drive</street>
+          <city>Kanata</city>
+          <region>Ontario</region>
+          <code>K2K 3E8</code>
+          <country>Canada</country>
+        </postal>
+        <email>msiva@cisco.com</email>
+      </address>
+    </author>
+
+    
+    <author fullname="Edward Crabbe" initials="E." surname="Crabbe">
+      <organization>Google, Inc.</organization>
+      <address>
+        <postal>
+          <street>1600 Amphitheatre Parkway</street>
+          <city>Mountain View</city>
+          <region>CA</region>
+          <code>94043</code>
+          <country>USA</country>
+        </postal>
+        <email>edc@google.com</email>
+      </address>
+    </author>
+	
+	 <author fullname="Julien Meuric" initials="J." surname="Meuric">
+      <organization>FT</organization>
+      <address>
+        <postal>
+          <street></street>
+          <city></city>
+          <region></region>
+          <code></code>
+          <country></country>
+        </postal>
+        <email></email>
+      </address>
+    </author>
+
+    <date day="30" month="October" year="2013" />
+
+    <workgroup>PCE Working Group</workgroup>
+
+    <abstract>
+      <t> 
+	    An active stateful PCE can change characteristics of label switched paths (LSPs), 
+		or even initiate the creation of LSPs. How these LSPs are used for forwarding traffic 
+		has been considered a topic outside of PCEP's scope. Regardless of how such a mapping
+		is implemented, it requires the ability to identfiy the LSP or LSPs to use for forwarding in 
+        a flexible way.		
+        This document proposes an extension to PCEP to allow tagging LSPs for the purpose
+		of traffic mapping.		
+      </t> 
+    </abstract> 
+
+    <note title="Requirements Language">
+      <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+      "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+      document are to be interpreted as described in <xref target="RFC2119"/>.
+      </t>
+    </note>
+  </front>
+
+  <middle>
+    <section anchor="Introduction" title="Introduction">
+
+      <t><xref target="I-D.ietf-pce-stateful-pce"/> specifies the PCEP extensions
+      in support of active stateful PCEs. A PCC can delegate its LSPs to the PCE, 
+	  allowing the PCE to update various attributes (such as path or bandwidth) <xref
+      target="I-D.crabbe-pce-pce-initiated-lsp"/> specifies a mechanism allowing
+      a PCE to dynamically instantiate LSPs on a PCC by sending the path and
+      characteristics of the LSP. In both cases, the PCE takes an active role, 
+	  initiating changes in the network without the PCC initiating this interaction. 
+	  This model makes an active stateful PCE a very attractive building block for SDN
+	  solutions.</t>
+	  
+	  <t>When integrating a stateful PCE in a larger solution, the mapping of traffic
+	  to the LSPs is an important function. Two decisions must be taken to allow for such a 
+	  mapping: 1) which traffic should be mapped (forwarding equivalence class 
+	  identification), for example "map all traffic with destination port xxx" 
+	  and 2) which is the LSP onto which the traffic should be forwarded (LSP identification), for 
+	  example "LSP to destination yyy, with latency guarantee x".
+	  Note that: 
+	  a) multiple forwarding equivalence classes (FECs) may be mapped to the same LSP, b) one FEC 
+	  may be mapped to one or more LSPs and c) the mapping should be communicated in a way that allows
+	  both PCE-controlled and non-PCE-controlled LSPs to be used, and allows both a central and 
+	  a distributed mode of operation, so as to allow deployment of 
+	  this function in a mixed network. </t>
+
+      <t>Similar to how a route may be associated with one or more communities in BGP, an LSP 
+	  may be tagged with one or more opaque LSP-tags to allow for easy LSP identification. This 
+	  association may be 1) configured on the router or 2) communicated by an active stateful PCE or
+	  3) distributed in a dynamic way (outside the scope of this document). This draft defines the 
+	  procedures for associating an LSP-tag to an LSP in PCEP.</t> 
+      
+    </section> <!-- Introduction -->
+
+    <section title="Terminology">
+
+      <t>The following terminologies are used in this document:
+
+      <list style="hanging">
+        <t hangText="LSR:"> Label Switching Router.</t>
+        <t hangText="PCC:"> Path Computation Client.</t>
+        <t hangText="PCE:"> Path Computation Element</t>
+        <t hangText="PCEP:"> Path Computation Element Protocol.</t>
+      </list>
+      </t>
+
+    </section> <!-- Terminology --> 
+
+    <section anchor="LSP-TAG-TLV" title="LSP TAG TLV">
+
+      <t>The LSP TAG represents an opaque valure to be associated with an LSP. The 
+      same LSP TAG may be associated with several LSPs by sending the LSP-TAG in a 
+	  PCUpd message for each of them. One LSP may be associated
+      with multiple LSP TAGs by specifying them in separate TLVs. 
+	  The operator may define the opaque tag in any way that 
+	  is convenient operationally, for example he may choose to embed the LSP 
+	  destination address in the LSP TAG. The tags associated with an LSP may change
+	  during the lifetime of the LSP (for example, if a tag represents compliance to a
+	  latency bound, when the LSP is rerouted along a non-compliant path, the tag would need to 
+	  be removed to avoid mapping delay-sensitive traffic to it).</t>
+
+      <figure anchor="LSP-TAG-TLV-FORMAT" title="LSP TAG TLV">
+        <artwork align="center"><![CDATA[
+   0                   1                   2                   3
+   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |             Type  [TBD]       |             Length=8          |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |     Flags   |D|  Reserved     |          Tag                  |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                               +
+  |                                                               |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        ]]></artwork>
+      </figure>
+
+      <t>The LSP-TAG TLV is an optional TLV for use in the LSP Object
+	  (<xref target="I-D.ietf-pce-stateful-pce"/>). Its format is shown in the 
+	  above figure.  The type of the TLV is to be defined by IANA. The flags field 
+	  defines a single flag, the dis-association flag.
+
+      <list style="symbols">
+        <t>D = 1:Dis-associate the tag specified in the TLV from the LSP specified in the LSP object. </t>
+      </list>
+      </t>
+
+	  <t> On PCUpd, the D flag MAY be set by the PCE to request a dis-association of a tag it previously
+	  set. XXX TBD - the error condition needs to be specified for the case where the disassociation 
+	  is invalid. In a PCRpt message, the PCC MUST report all
+	  the tags associated with an LSP. If a TAG is missing it is considered removed (this is to support
+      reporting associations communicated via different mechanisms, for example configuration, as well
+      as associations established by the PCE). </t> 
+	  
+	  <t> XXX TBD - add text on non-support. Can either do capability negotiation or just ignore the 
+	  unknown TLV.</t> 
+    </section> <!-- LSP-TAG-tlv --> 
+
+ 
+    <section anchor="IANA" title="IANA Considerations">
+
+      <t>IANA is requested to allocate a new TLV type (recommended value is
+      TBD)for LSP-TAG TLV specified in this document.</t>
+
+      <t>This document requests that a registry is created to manage the value
+      of the Flag Type field in the LSP-TAG TLV. XXX TBD the flag values</t>
+
+      <t>
+	  XXX TBD - document errors 
+      </t>
+      
+    </section>
+
+  </middle>
+
+  <back>
+    <references title="Normative References">
+      <?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml"?>
+      <?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.5440.xml"?>
+	   <?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.5575.xml"?>
+      <?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-pce-stateful-pce"?>
+      <?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.crabbe-pce-pce-initiated-lsp"?>
+    </references>
+
+  </back>
+
+</rfc>
