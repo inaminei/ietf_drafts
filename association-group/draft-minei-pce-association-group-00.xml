@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd">
+<?rfc toc="yes"?>
+<?rfc tocompact="yes"?>
+<?rfc tocdepth="3"?>
+<?rfc tocindent="yes"?>
+<?rfc symrefs="yes"?>
+<?rfc sortrefs="yes"?>
+<?rfc comments="yes"?>
+<?rfc inline="yes"?>
+<?rfc compact="yes"?>
+<?rfc subcompact="no"?>
+<rfc category="std" docName="draft-minei-pce-association-group-00" ipr="trust200902">
+  <front>
+    <title abbrev="PCE association group">
+    PCEP Extensions for establishing relationships between sets of LSPs</title>
+
+    <author fullname="Ina Minei" initials="I." surname="Minei">
+      <organization>Google, Inc.</organization>
+      <address>
+	<postal>
+	  <street>1600 Amphitheatre Parkway</street>
+	  <city>Mountain View</city>
+	  <region>CA</region>
+	  <code>94043</code>
+	  <country>US</country>
+	</postal>
+	<email>inaminei@google.com</email>
+      </address>
+    </author>
+
+    <author fullname="Edward Crabbe" initials="E." surname="Crabbe">
+      <organization>Google, Inc.</organization>
+      <address>
+        <postal>
+          <street>1600 Amphitheatre Parkway</street>
+          <city>Mountain View</city>
+          <region>CA</region>
+          <code>94043</code>
+          <country>US</country>
+        </postal>
+        <email>edc@google.com</email>
+      </address>
+    </author>
+
+	
+    <author fullname="Siva Sivabalan" initials="S." surname="Sivabalan">
+      <organization>Cisco Systems, Inc.</organization>
+      <address>
+	<postal>
+	  <street>170 West Tasman Dr.</street>
+	  <city>San Jose</city>
+	  <region>CA</region>
+	  <code>95134</code>
+	  <country>US</country>
+	</postal>
+	<email>msiva@cisco.com</email>
+      </address>
+    </author>
+
+    <author fullname="Hariharan Ananthakrishnan" initials="H." surname="Ananthakrishnan">
+      <organization>Juniper Networks, Inc.</organization>
+      <address>
+	<postal>
+	  <street>1194 N. Mathilda Ave.</street>
+	  <city>Sunnyvale</city>
+	  <region>CA</region>
+	  <code>94089</code>
+	  <country>US</country>
+	</postal>
+	<email>hanantha@juniper.net</email>
+      </address>
+    </author>
+
+    <date day="20" month="June" year="2014" />
+
+    <workgroup>PCE Working Group</workgroup>
+
+    <abstract>
+    <t>XXX TBD 
+    </t>
+      
+    </abstract>
+
+    <note title="Requirements Language">
+      <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+      "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+      document are to be interpreted as described in <xref target="RFC2119"/>.
+      </t>
+    </note>
+  </front>
+
+  <middle>
+    <section title="Introduction">
+      <t><xref target="RFC5440"/> describes the Path Computation Element
+      Protocol PCEP.  PCEP defines the communication between a Path Computation
+      Client (PCC) and a Path Control Element (PCE), or between PCE and PCE,
+      enabling computation of Multiprotocol Label Switching (MPLS) for Traffic
+      Engineering Label Switched Path (TE LSP) characteristics.
+	  </t>
+
+      <t><xref target='I-D.ietf-pce-stateful-pce'>Stateful pce</xref>  specifies a 
+	  set of extensions to PCEP to enable stateful
+      control of TE LSPs between and across PCEP sessions in compliance with
+      <xref target="RFC4657"/>.  It includes mechanisms to effect LSP state
+      synchronization between PCCs and PCEs, delegation of control of LSPs to
+      PCEs, and PCE control of timing and sequence of path computations within
+      and across PCEP sessions and focuses on a model where LSPs are configured on the PCC
+	  and control over them is delegated to the PCE.
+	  </t>
+	  
+	  <t> This document introduces a generic mechanism to create a grouping of LSPs. 
+         This grouping can then be used to define associations between sets of LSPs or between a 
+         set of LSPs and a set of attributes. 
+	  </t>
+
+
+    </section> <!-- Introduction -->
+
+    <section title="Terminology">
+      <t>This document uses the following terms defined in <xref
+      target="RFC5440"/>: PCC, PCE, PCEP Peer.
+	  </t>
+
+     
+      <t>The message formats in this document are specified using Routing
+      Backus-Naur Format (RBNF) encoding as specified in <xref
+      target="RFC5511"/>.
+	  </t>
+    </section> <!-- Terminology -->
+
+     
+
+    <section anchor="Overview" title="Architectural Overview">
+     <section anchor="Motivation" title="Motivation">
+	 <t> 
+         Stateful PCE provides the ability to update existing LSPs and to instantiate new ones. 
+         To enable support for PCE-controlled make-before-break and for protection, there is a need
+         to define associations between LSPs. For example, the association between the original 
+         and the reoptimized path in the make-before break scenario, or between the 
+         primary and secondary path in end-to-end protection. Another use for LSP grouping is for
+         applying a common set of configuration parameters or behaviors to a set of LSPs. 
+         Rather than creating separate mechanisms for each use case, this draft defines a generic one. 
+	 </t>
+      </section><!-- Motivation -->
+	 
+      <section anchor="Operation-overview" title="Operation overview">
+	 <t>
+	 LSPs are associated with other LSPs with which they interact by adding them
+	 to a common association group. Association groups as defined in this document are locally 
+         meaningful at the LSP head-end, and can only be applied to LSPs originating at that head end. Thus, the 
+         association identifiers are unique at each head end, but not necessarily across the network, and are
+         owned and managed by the head end. 
+         Multiple types of groups can exist, each with their own identifiers space. The definition of the
+         different association types and their behaviors is outside the scope of this document.  
+	 LSPs can join the association individually and can be removed from the association 
+	 individually. There is support for removal of all LSPs from an association as well. 
+         In addition to the membership to the association, additional properties such as individual roles 
+         in the group can be defined at the time of the association.
+	 An LSP may join multiple association groups, of different or of the same type. 
+        </t> 
+      </section><!-- Operation overview -->
+     </section><!-- Overview -->
+     
+
+		
+    <section anchor="association" title="LSP association groups">
+	
+	<t> 
+        Association groups are owned by the PCC, but the PCE may request creation of
+        an association group (for example before instantiating LSPs that belong to that group).
+        Membership in an association group can be initiated by either the PCE or the PCC. 
+        Association groups and their memberships are defined using the Association object.
+        </t> 
+
+	<t> The Association Object is an optional object in the PCupd, PCRpt and PCinit messages. </t> 
+	
+		
+        <t>The format of the Association object is shown <xref target="Association-Object-Fmt"/>:</t>
+
+        <figure anchor="Association-Object-Fmt" title="The Association Object format">
+          <artwork><![CDATA[
+
+0               	1               	2               	3
+   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |Type   |  Generic flags    |R| Type-specific flags             |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |             Association group id                              |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   //            Optional TLVs	                                  //
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+	      ]]></artwork>
+        </figure>
+	
+       <t> 
+       Type - the association type (for example protection or make-before-break). The association type
+       will be defined in separate documents.
+       </t>
+
+       <t> 
+       Generic flags - flags for the association object. A single one is defined, the R flag indicating 
+       removal from the association group.
+       </t>
+	
+       <t> Type-specific flags - specific to the association type, will be defined at the time of the association type.
+       </t> 
+
+       <t> Association group id - identifier of the association group. The values 0 and 0xffff are reserved. Value 0 is used
+       when the PCE request allocation of an association group. Value 0xffff means all association groups. </t> 
+	
+	</section> <!-- lsp association -->
+	
+	
+
+   
+	<section anchor="IANA-considerations" title="IANA considerations">
+	  
+  
+        <t>This document defines the following new PCEP Object-classes and
+        Object-values:</t>
+        <texttable anchor="Object-Code-Points" style="none" suppress-title="true">
+          <ttcol align="center">Object-Class Value &nbsp;</ttcol>
+          <ttcol align="left" width='50%'>Name </ttcol>
+          <ttcol align="left">Reference </ttcol>
+          <c></c><c>&nbsp;&nbsp;&nbsp;&nbsp;</c><c></c>
+          <c>TBD</c><c>Association</c><c>This document</c>
+          <c></c><c>Object-Type</c><c></c>
+          <c></c><c>&nbsp;&nbsp;&nbsp;&nbsp;1</c><c></c>
+        </texttable>
+   
+
+     
+        <t>This document requests that a registry is created to manage the Flags
+        field of the Association object. New values are to be assigned by Standards
+        Action <xref target="RFC5226"/>. 
+        </t>
+
+	   
+	</section> <!-- IANA -->
+	
+   <section anchor="Security" title="Security Considerations">
+     
+     <t> XXX </t> 
+   </section>
+
+   <section anchor="Acknowledgements" title="Acknowledgements">
+     <t>We would like to thank XXX and XXX  for
+     their contributions to this document.</t>
+    </section>
+	
+  </middle>
+
+  <back>
+    <references title="Normative References">
+      <?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml"?>
+      <?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.5440.xml"?>
+      <?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.5226.xml"?>
+      <?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.5511.xml"?>
+    	<?rfc include="reference.I-D.ietf-pce-stateful-pce"?>
+   </references>
+
+   <references title="Informative References">
+    
+     <?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.4655.xml"?>
+     <?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.4657.xml"?>
+     <?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.5394.xml"?>
+     <?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.5557.xml"?>
+	  <?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.6982.xml"?>
+   </references>
+  </back>
+</rfc>
