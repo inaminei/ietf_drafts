@@ -1634,7 +1634,10 @@ Internet-Draft      PCEP Extensions for Stateful PCE           June 2014
    to an SRP object with the reserved value of 0x00000000.  An SRP-ID-
    number is considered unacknowledged and cannot be reused until a
    PCErr or PCRpt arrives with an SRP-ID-number equal or higher for the
-   same LSP.
+   same LSP.  In case of SRP-ID wrapping the last SRP-ID before the
+   wrapping MUST be explicitly acknowledged, to avoid a situation where
+   SRP-IDs remain unacknowledged after the wrap.  This means that the
+   PCC may need to issue two PCUpd messages on detecting a wrap.
 
 7.3.  LSP Object
 
@@ -1671,9 +1674,6 @@ Internet-Draft      PCEP Extensions for Stateful PCE           June 2014
    on all PCEP sessions it maintains at a given times.  The mapping of
    the Symbolic Path Name to PLSP-ID is communicated to the PCE by
    sending a PCRpt message containing the SYMBOLIC-PATH-NAME TLV.  All
-   subsequent PCEP messages then address the LSP by the PLSP-ID.  The
-   values of 0 and 0xFFFFF are reserved.  Note that the PLSP-ID is a
-   value that is constant for the lifetime of the PCEP session, during
 
 
 
@@ -1682,6 +1682,9 @@ Crabbe, et al.          Expires December 24, 2014              [Page 30]
 Internet-Draft      PCEP Extensions for Stateful PCE           June 2014
 
 
+   subsequent PCEP messages then address the LSP by the PLSP-ID.  The
+   values of 0 and 0xFFFFF are reserved.  Note that the PLSP-ID is a
+   value that is constant for the lifetime of the PCEP session, during
    which time for an RSVP-signaled LSP there might be a different RSVP
    identifiers (LSP-id, tunnel-id) allocated it.
 
@@ -1727,9 +1730,6 @@ Internet-Draft      PCEP Extensions for Stateful PCE           June 2014
 
       0 - DOWN:  not active.
 
-      1 - UP:  signalled.
-
-      2 - ACTIVE:  up and carrying traffic.
 
 
 
@@ -1737,6 +1737,10 @@ Crabbe, et al.          Expires December 24, 2014              [Page 31]
 
 Internet-Draft      PCEP Extensions for Stateful PCE           June 2014
 
+
+      1 - UP:  signalled.
+
+      2 - ACTIVE:  up and carrying traffic.
 
       3 - GOING-DOWN:  LSP is being torn down, resources are being
          released.
@@ -1771,10 +1775,6 @@ Internet-Draft      PCEP Extensions for Stateful PCE           June 2014
 
    The format of the IPV4-LSP-IDENTIFIERS TLV is shown in the following
    figure:
-
-
-
-
 
 
 

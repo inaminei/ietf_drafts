@@ -1427,7 +1427,11 @@ Where:
         absence of the SRP object is equivalent to an SRP object with the reserved value
         of 0x00000000. An SRP-ID-number is considered unacknowledged and cannot be reused until a
         PCErr or PCRpt arrives with an SRP-ID-number equal or higher for the
-        same LSP.</t>
+        same LSP.  In case of SRP-ID wrapping  the last SRP-ID before the wrapping
+	MUST be explicitly acknowledged, to avoid a situation where SRP-IDs remain
+	unacknowledged after the wrap. This means that the PCC may need to issue 
+	two PCUpd messages on detecting a wrap.
+	</t>
 
       </section> <!--SRP object --> 
 
