@@ -72,14 +72,48 @@
       </address>
     </author>
 
-    <date day="20" month="June" year="2014" />
+	<author fullname="Xian Zhang" initials="X." surname="Zhang">
+      <organization>Huawei Technologies</organization>
+      <address>
+	<postal>
+	  <street>F3-5-B R&amp;D Center, Huawei Base Bantian, Longgang District
+</street>
+	  <city>Shenzhen</city>
+	  <region>Guangdong</region>
+	  <code>518129</code>
+	  <country>P.R.China</country>
+	</postal>
+	<email>zhang.xian@huawei.com</email>
+      </address>
+    </author>
+
+
+	<author fullname="Yosuke Tanaka" initials="Y." surname="Tanaka">
+      <organization>NTT Communications Corporation</organization>
+      <address>
+	<postal>
+	  <street>Granpark Tower 3-4-1 Shibaura, Minato-ku
+</street>
+	  <city>Tokyo</city>
+	  <region></region>
+	  <code>108-8118</code>
+	  <country>Japan</country>
+	</postal>
+	<email>yosuke.tanaka@ntt.com</email>
+      </address>
+    </author>
+
+    <date day="27" month="June" year="2014" />
 
     <workgroup>PCE Working Group</workgroup>
 
     <abstract>
-    <t>XXX TBD 
-    </t>
-      
+    <t> This document introduces a generic mechanism to create a grouping of LSPs in the 
+       context of stateful PCE. 
+       This grouping can then be used to define associations between sets of LSPs or between a 
+       set of LSPs and a set of attributes (such as configuration parameters or behaviors), 
+       and is equally applicable to the active and passive modes of stateful PCE.
+       </t>
     </abstract>
 
     <note title="Requirements Language">
@@ -93,26 +127,26 @@
   <middle>
     <section title="Introduction">
       <t><xref target="RFC5440"/> describes the Path Computation Element
-      Protocol PCEP.  PCEP defines the communication between a Path Computation
+      Protocol PCEP.  PCEP enables the communication between a Path Computation
       Client (PCC) and a Path Control Element (PCE), or between PCE and PCE,
-      enabling computation of Multiprotocol Label Switching (MPLS) for Traffic
+      for the purpose of computation of Multiprotocol Label Switching (MPLS) for Traffic
       Engineering Label Switched Path (TE LSP) characteristics.
-	  </t>
+      </t>
 
       <t><xref target='I-D.ietf-pce-stateful-pce'>Stateful pce</xref>  specifies a 
-	  set of extensions to PCEP to enable stateful
+      set of extensions to PCEP to enable stateful
       control of TE LSPs between and across PCEP sessions in compliance with
-      <xref target="RFC4657"/>.  It includes mechanisms to effect LSP state
-      synchronization between PCCs and PCEs, delegation of control of LSPs to
-      PCEs, and PCE control of timing and sequence of path computations within
-      and across PCEP sessions and focuses on a model where LSPs are configured on the PCC
-	  and control over them is delegated to the PCE.
-	  </t>
+      <xref target="RFC4657"/> and focuses on a model where LSPs are configured 
+      on the PCC and control over them is delegated to the PCE. The model of 
+      operation where LSPs are initiated from the PCE is described in 
+      <xref target='I-D.ietf-pce-pce-initiated-lsp'></xref>.
+      </t>
 	  
-	  <t> This document introduces a generic mechanism to create a grouping of LSPs. 
-         This grouping can then be used to define associations between sets of LSPs or between a 
-         set of LSPs and a set of attributes. 
-	  </t>
+       <t> This document introduces a generic mechanism to create a grouping of LSPs. 
+       This grouping can then be used to define associations between sets of LSPs or between a 
+       set of LSPs and a set of attributes (such as configuration parameters or behaviors), 
+       and is equally applicable to the active and passive modes of stateful PCE.
+       </t>
 
 
     </section> <!-- Introduction -->
@@ -122,14 +156,8 @@
       target="RFC5440"/>: PCC, PCE, PCEP Peer.
 	  </t>
 
-     
-      <t>The message formats in this document are specified using Routing
-      Backus-Naur Format (RBNF) encoding as specified in <xref
-      target="RFC5511"/>.
-	  </t>
     </section> <!-- Terminology -->
-
-     
+ 
 
     <section anchor="Overview" title="Architectural Overview">
      <section anchor="Motivation" title="Motivation">
@@ -138,7 +166,7 @@
          To enable support for PCE-controlled make-before-break and for protection, there is a need
          to define associations between LSPs. For example, the association between the original 
          and the reoptimized path in the make-before break scenario, or between the 
-         primary and secondary path in end-to-end protection. Another use for LSP grouping is for
+         working and protection path in end-to-end protection. Another use for LSP grouping is for
          applying a common set of configuration parameters or behaviors to a set of LSPs. 
          Rather than creating separate mechanisms for each use case, this draft defines a generic one. 
 	 </t>
@@ -150,13 +178,12 @@
 	 to a common association group. Association groups as defined in this document are locally 
          meaningful at the LSP head-end, and can only be applied to LSPs originating at that head end. Thus, the 
          association identifiers are unique at each head end, but not necessarily across the network, and are
-         owned and managed by the head end. 
+         owned and managed by the head end. </t>
+      <t> 
          Multiple types of groups can exist, each with their own identifiers space. The definition of the
-         different association types and their behaviors is outside the scope of this document.  
-	 LSPs can join the association individually and can be removed from the association 
-	 individually. There is support for removal of all LSPs from an association as well. 
-         In addition to the membership to the association, additional properties such as individual roles 
-         in the group can be defined at the time of the association.
+         different association types and their behaviors is outside the scope of this document.
+         The establishment and removal of the association relationship can be done on a per LSP basis. 
+	  There is support for removal of all LSPs from an association as well. 
 	 An LSP may join multiple association groups, of different or of the same type. 
         </t> 
       </section><!-- Operation overview -->
@@ -207,10 +234,34 @@
        <t> Type-specific flags - specific to the association type, will be defined at the time of the association type.
        </t> 
 
-       <t> Association group id - identifier of the association group. The values 0 and 0xffff are reserved. Value 0 is used
-       when the PCE request allocation of an association group. Value 0xffff means all association groups. </t> 
+       <t> Association group id - identifier of the association group. The values 0 and 0xffffffff are reserved. Value 0 is used
+       when the PCE requests allocation of an association group. Value 0xffffffff indicates all association groups. </t> 
 	
 	</section> <!-- lsp association -->
+
+	<section  anchor="association-use" title="Using the LSP association group">
+
+	 <t> 
+	  Membership in an association group is reported in PCRpt messages by including the association object along with the LSP
+	  object. Removal of the LSP from 
+	  the association group on the PCC (for example through configuration) is reported by including the association object 
+	  with the R flag set. When an LSP belongs to multiple association groups, multiple association objects are included in 
+          the PCRpt, one for each association the LSP belongs to.  
+	  A PCE can associate an LSP that was delegated to it (the candidate LSP) 
+	  with an existing association group, by sending a PCUpd for the candidate LSP, including the Association Object 
+	  for the association group. Error 
+	  handling for this operation will be defined in a future version of this draft. 
+	 </t> 
+
+	 <t> 
+	  An association group can be created locally at the PCC (for example through configuration) or it can be requested by the 
+	  PCE. A PCE may request the creation of an association group by sending a PCUpd message with the reserved value 0. In 
+	  response to this request, the PCC will allocate an association group id and report it in the PCRpt message. Error handling
+	  will be defined in a future version of this draft. Note that this operation includes creation of the group and association
+	  of one LSP with this group. Requesting the creation of an association group before the LSP exists will be handled in a 
+	  future version of this draft. 
+	 </t> 
+        </section> <!-- association-use -->
 	
 	
 
@@ -242,11 +293,16 @@
 	
    <section anchor="Security" title="Security Considerations">
      
-     <t> XXX </t> 
+     <t> The security considerations described in <xref target='I-D.ietf-pce-stateful-pce'></xref> 
+   apply to the extensions described in this document.  Additional
+   considerations related to a malicious PCE are introduced, as the PCE may now create additional state
+   on the PCC through the creation of association groups. 
+
+  </t> 
    </section>
 
    <section anchor="Acknowledgements" title="Acknowledgements">
-     <t>We would like to thank XXX and XXX  for
+     <t>We would like to thank Yuji Kamite and Joshua George  for
      their contributions to this document.</t>
     </section>
 	
@@ -257,17 +313,14 @@
       <?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml"?>
       <?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.5440.xml"?>
       <?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.5226.xml"?>
-      <?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.5511.xml"?>
     	<?rfc include="reference.I-D.ietf-pce-stateful-pce"?>
+	<?rfc include="reference.I-D.ietf-pce-pce-initiated-lsp"?>
    </references>
 
    <references title="Informative References">
-    
+    	<?rfc include="reference.I-D.tanaka-pce-stateful-pce-mbb"?>
      <?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.4655.xml"?>
      <?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.4657.xml"?>
-     <?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.5394.xml"?>
-     <?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.5557.xml"?>
-	  <?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.6982.xml"?>
    </references>
   </back>
 </rfc>
