@@ -802,6 +802,37 @@
           State Timeout Interval.</t>
         </section> <!--Returning a delegation --> 
 
+        <section anchor="LSP-REQUEST" title="Requesting a Delegation">
+          <t>If a PCE would like to start updating an LSP's parameters and that
+          LSP is not delegated to it, it MAY request PCC to delegate it by sending
+          an empty LSP Update Request which has the Delegate flag set to 1.</t>
+
+          <figure anchor="lsp-request" title="Requesting a Delegation">
+            <artwork><![CDATA[
+                  +-+-+                    +-+-+
+                  |PCC|                    |PCE|
+                  +-+-+                    +-+-+
+                    |                        |
+                    |---PCRpt, Delegate=0--->| No delegation for LSP
+                    |            .           |
+                    |            .           |
+                    |            .           |
+                    |<--PCUpd, Delegate=1----| Delegation requested
+                    |                        |
+                    |---PCRpt, Delegate=1--->| LSP delegated
+                    |                        |
+              ]]></artwork>
+          </figure>
+
+          <t>Upon reception of the delegation request, the PCC will process the
+          request according its local policy. If it decides to grant the request,
+          it MUST revoke any current delegation of that LSP and it will respond
+          with a corresponding PCRpt message, which will additionally carry current
+          LSP state. If the PCC decides to not grant the delegation request, it
+          MUST respond with a PCErr message with error-type 19 (invalid operation)
+          and error value 1.</t>
+        </section> <!--Returning a delegation -->
+
         <section anchor="Redundant-PCEs" title="Redundant Stateful PCEs">
           <t>In a redundant
           configuration where one PCE is backing up another PCE, the backup PCE
