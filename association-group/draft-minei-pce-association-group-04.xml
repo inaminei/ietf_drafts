@@ -1,0 +1,629 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd">
+<?rfc toc="yes"?>
+<?rfc tocompact="yes"?>
+<?rfc tocdepth="3"?>
+<?rfc tocindent="yes"?>
+<?rfc symrefs="yes"?>
+<?rfc sortrefs="yes"?>
+<?rfc comments="yes"?>
+<?rfc inline="yes"?>
+<?rfc compact="yes"?>
+<?rfc subcompact="no"?>
+<rfc category="std" docName="draft-minei-pce-association-group-04" ipr="trust200902">
+  <front>
+    <title abbrev="PCE association group">
+    PCEP Extensions for Establishing Relationships Between Sets of LSPs</title>
+
+    <author fullname="Ina Minei" initials="I." surname="Minei">
+      <organization>Google, Inc.</organization>
+      <address>
+	<postal>
+	  <street>1600 Amphitheatre Parkway</street>
+	  <city>Mountain View</city>
+	  <region>CA</region>
+	  <code>94043</code>
+	  <country>US</country>
+	</postal>
+	<email>inaminei@google.com</email>
+      </address>
+    </author>
+
+    <author fullname="Edward Crabbe" initials="E." surname="Crabbe">
+      <address>
+        <email>edward.crabbe@gmail.com</email>
+      </address>
+    </author>
+	
+    <author fullname="Siva Sivabalan" initials="S." surname="Sivabalan">
+      <organization>Cisco Systems, Inc.</organization>
+      <address>
+	<postal>
+	  <street>170 West Tasman Dr.</street>
+	  <city>San Jose</city>
+	  <region>CA</region>
+	  <code>95134</code>
+	  <country>US</country>
+	</postal>
+	<email>msiva@cisco.com</email>
+      </address>
+    </author>
+
+    <author fullname="Hariharan Ananthakrishnan" initials="H." surname="Ananthakrishnan">
+      <organization>Packet Design</organization>
+      <address>
+	<email>hari@packetdesign.com</email>
+      </address>
+    </author>
+
+	<author fullname="Xian Zhang" initials="X." surname="Zhang">
+      <organization>Huawei Technologies</organization>
+      <address>
+	<postal>
+	  <street>F3-5-B R&amp;D Center, Huawei Base Bantian, Longgang District
+</street>
+	  <city>Shenzhen</city>
+	  <region>Guangdong</region>
+	  <code>518129</code>
+	  <country>P.R.China</country>
+	</postal>
+	<email>zhang.xian@huawei.com</email>
+      </address>
+    </author>
+
+
+	<author fullname="Yosuke Tanaka" initials="Y." surname="Tanaka">
+      <organization>NTT Communications Corporation</organization>
+      <address>
+	<postal>
+	  <street>Granpark Tower 3-4-1 Shibaura, Minato-ku
+</street>
+	  <city>Tokyo</city>
+	  <region></region>
+	  <code>108-8118</code>
+	  <country>Japan</country>
+	</postal>
+	<email>yosuke.tanaka@ntt.com</email>
+      </address>
+    </author>
+
+    <date day="3" month="November" year="2015" />
+
+    <workgroup>PCE Working Group</workgroup>
+
+    <abstract>
+    <t> This document introduces a generic mechanism to create a grouping of LSPs in the 
+       context of a PCE. 
+       This grouping can then be used to define associations between sets of LSPs or between a 
+       set of LSPs and a set of attributes (such as configuration parameters or behaviors), 
+       and is equally applicable to the active and passive modes of a stateful PCE as well as
+	   a stateless PCE.
+       </t>
+    </abstract>
+
+    <note title="Requirements Language">
+      <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+      "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+      document are to be interpreted as described in <xref target="RFC2119"/>.
+      </t>
+    </note>
+  </front>
+
+  <middle>
+    <section title="Introduction">
+      <t><xref target="RFC5440"/> describes the Path Computation Element
+      Protocol PCEP.  PCEP enables the communication between a Path Computation
+      Client (PCC) and a Path Control Element (PCE), or between PCE and PCE,
+      for the purpose of computation of Multiprotocol Label Switching (MPLS) as well
+      as Generalzied MPLS (GMPLS) for Traffic
+      Engineering Label Switched Path (TE LSP) characteristics.
+      </t>
+
+      <t><xref target='I-D.ietf-pce-stateful-pce'>Stateful pce</xref>  specifies a 
+      set of extensions to PCEP to enable stateful
+      control of TE LSPs between and across PCEP sessions in compliance with
+      <xref target="RFC4657"/> and focuses on a model where LSPs are configured 
+      on the PCC and control over them is delegated to the PCE. The model of 
+      operation where LSPs are initiated from the PCE is described in 
+      <xref target='I-D.ietf-pce-pce-initiated-lsp'></xref>.
+      </t>
+	  
+       <t> This document introduces a generic mechanism to create a grouping of LSPs. 
+       This grouping can then be used to define associations between sets of LSPs or between a 
+       set of LSPs and a set of attributes (such as configuration parameters or behaviors), 
+       and is equally applicable to the active and passive modes of a stateful PCE and a stateless
+	   PCE.
+       </t>
+
+
+    </section> <!-- Introduction -->
+
+    <section title="Terminology">
+      <t>This document uses the following terms defined in <xref
+      target="RFC5440"/>: PCC, PCE, PCEP Peer.  </t>
+      
+      <t> The following term is defined in this document: </t>
+	  
+      <t> Association Timeout Interval: when a PCEP session is terminated, 
+      a PCC waits for this time period before deleting associations created by the PCEP peer. 
+      </t> 		  
+    </section> <!-- Terminology -->
+ 
+
+    <section anchor="Overview" title="Architectural Overview">
+     <section anchor="Motivation" title="Motivation">
+	 <t> 
+         Stateful PCE provides the ability to update existing LSPs and to instantiate new ones. 
+         To enable support for PCE-controlled make-before-break and for protection, there is a need
+         to define associations between LSPs. For example, the association between the original 
+         and the re-optimized path in the make-before break scenario, or between the 
+         working and protection path in end-to-end protection. Another use for LSP grouping is for
+         applying a common set of configuration parameters or behaviors to a set of LSPs. 
+	 </t>
+	<t>
+	  For a  stateless PCE, it might be useful to associate a path 
+	  computation request to an association group, thus enabling it to associate
+	  a common
+	  set of configuration parameters or behaviors  with
+	  the request.
+	 </t>
+	<t>
+         Rather than creating separate mechanisms for each use case, this draft defines a generic mechanism that can 
+	 be reused as needed. 
+	 </t>
+      </section><!-- Motivation -->
+	 
+      <section anchor="Operation-overview" title="Operation Overview">
+	 <t>
+	 LSPs are associated with other LSPs with which they interact by
+	 adding them to a common association group.  Association groups as
+	 defined in this document can be applied to LSPs originating at the same head end 
+	 or different head ends.  For LSPs originating at the same head end, the association 
+	 can be initiated by either the PCC (head end)  or by a PCE.  Only a stateful
+	 PCE can initiate an association for LSPs originating at different head ends. 
+	 For both cases, the association is uniquely identified by the combination of an association 
+	 identifier and the address of the node that created the association.  
+	 </t>
+	 
+	 <t> 
+         Multiple types of groups can exist, each with their own identifiers space. 
+	 The definition of the different association types and their behaviors is 
+	 outside the scope of this document.  The establishment and removal of the 
+	 association relationship can be done on a per LSP basis. 
+	 An LSP may join multiple association groups, of different or of the same type. 
+         </t> 
+
+	<t>
+	In the case of a stateless PCE, associations are created out of band, and 
+	PCEP peers should be aware of the association and its significance 
+	outside of the protocol.
+	</t>
+
+	<t> 
+	Association groups can be created by both PCC and PCE. When a PCC's
+	PCEP session with a PCE terminates unexpectedly, the PCC cleans up associations (as per 
+	the processing rules in this document). 
+	</t> 
+
+      </section><!-- Operation overview -->
+     </section><!-- Overview -->
+     
+
+		
+    <section anchor="association" title="ASSOCIATION Object">
+	<section anchor="Definition" title="Object Definition">
+	  <t> 
+	    Creation of an association group and modifications to its membership 
+	    can be initiated by either the PCE or the PCC.  Association groups
+	    and their memberships are defined using the ASSOCIATION object for 
+	    stateful PCE.
+	  </t> 
+	
+    <t>ASSOCIATION Object-Class is to be assigned by IANA (TBD).</t>
+	<t> ASSOCIATION Object-Type is 1 for IPv4 and its format is shown in
+	<xref target="Association-Object-Fmt1"/>:</t>
+
+     <figure anchor="Association-Object-Fmt1" title="The IPv4 ASSOCIATION Object format">
+     <artwork><![CDATA[
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |         Reserved              |            Flags            |R|  
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |      Association type         |      Association ID           |                      
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+   
+   |              IPv4 Association Source                          |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   //                   Optional TLVs	                          //
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+	      ]]></artwork>
+        </figure>
+		
+	<t> ASSOCIATION Object-Type is 2 for IPv6 and its format is shown in
+	<xref target="Association-Object-Fmt2"/>:</t>
+
+     <figure anchor="Association-Object-Fmt2" title="The IPv6 ASSOCIATION Object format">
+     <artwork><![CDATA[
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |         Reserved              |            Flags            |R|  
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |      Association type         |      Association ID           |                      
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                                                               |
+   |                    IPv6 Association Source                    |
+   |                                                               |  
+   |                                                               |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   //                   Optional TLVs	                          //
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+	      ]]></artwork>
+        </figure>
+        <t> Reserved: 16 bits - MUST be set to 0 and ignored upon receipt. </t>
+	<t>
+	Flags: 16 bits -  The following flags are currently defined: 
+	
+	<list style="hanging">
+            <t hangText="R (Removal - 1 bit):"> when set, the requesting
+			PCE peer requires the removal of an LSP from the association group.</t>
+    </list>
+	</t>
+	<t>
+	Association type: 16 bits - the association type (for example protection).
+        The association type will be defined
+	in separate documents.     
+	</t>
+
+	<t> Association ID: 16 bits - the identifier of the association group.  When combined 
+	with Type and Association Source, this value uniquely identifies an association group.  
+	The value 0xffff and 0x0 are reserved. The value 0xffff is used to indicate 
+	all association groups. 
+	</t>
+	
+	
+	<t> Association Source: 4 or 16 bytes - An IPv4 or IPv6 address, which is associated 
+	to the node that originated the association.
+	</t>
+	
+	<t> Optional TLVs: The optional TLVs follow the PCEP TLV format
+        of <xref target="RFC5440"/>. This document defines two optional TLVs.
+	</t>
+
+	<section anchor="Global-association-src" title="Global Association Source TLV">
+	
+	  <t> The Global Association Source TLV is an optional TLV for use in the Association Object. 
+	  </t> 
+
+   <figure anchor="Global-Association-Object-Fmt1" title="The Global Association Source TLV  format">
+     <artwork><![CDATA[
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |         Type                  |            Length             |  
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
+   |              Global Association Source                        |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ 
+
+	      ]]></artwork>
+        </figure>
+	<t> Type: To be allocated by IANA </t> 
+	<t> Length: Fixed value of 4 bytes </t> 
+	<t> Global Association Source: as defined in <xref target="RFC6780"/> </t> 
+
+	</section> 
+
+
+
+	<section anchor="EXT-association" title="Extended Association ID TLV">
+
+	  <t> The Extended Association ID TLV is an optional TLV for use in 
+	  the Association Object. 
+	  </t> 
+
+   <figure anchor="Ext-id-Object-Fmt1" title="The Extended Association ID  TLV  format">
+     <artwork><![CDATA[
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |         Type                  |            Length             |  
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
+   //                Extended Association ID                       //
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ 
+
+	      ]]></artwork>
+        </figure>
+	<t> Type: To be allocated by IANA </t> 
+	<t> Length: variable </t> 
+	<t> Extended Association ID: as defined in <xref target="RFC6780"/> </t> 
+
+	</section> 
+
+	</section> <!-- Object Definition -->
+
+	<section  anchor="Object-Encoding" title="Object Encoding in PCEP messages">
+
+	<t> The ASSOCIATION Object is OPTIONAL and MAY be carried in the Path 
+	Computation Update (PCUpd), Path Computation Report (PCRpt) and Path 
+	Computation Initiate (PCinit) messages. </t>
+
+	<t> When carried in PCRpt message, it is used to report the association 
+	group membership information pertaining to a LSP to a stateful PCE.  
+	It can also be used to remove an LSP from one or more association groups 
+	by setting the R flag to 1.  Unless, a PCE wants to delete an association 
+	from an LSP, it does not need to carry the ASSOCIATION 
+	object while updating other LSP attributes using the PCUpd message.</t>
+
+    <t> The PCRpt message is defined in <xref target='I-D.ietf-pce-stateful-pce'></xref> 
+	and updated as below:</t>
+	
+	<figure>
+	<artwork><![CDATA[
+
+<PCRpt Message> ::= <Common Header>
+                    <state-report-list>
+Where:   
+
+  <state-report-list> ::= <state-report>[<state-report-list>]
+
+   <state-report> ::= [<SRP>]
+                      <LSP>
+                      [<association-list>]
+                      <path>
+Where:  
+
+<association-list> ::= <ASSOCIATION> [<association-list>]
+	]]></artwork>
+	</figure>
+
+	<t> When an LSP is delegated to a stateful PCE, the stateful PCE can initiate 
+	a new association group for this LSP, or associate it with one or more existing
+	association groups. This is done by including the  ASSOCIATION Object in a 
+	PCUpd message or in a PCInit message.  A stateful PCE can also remove a delegated 
+	LSP from one or more association groups by setting the R flag to 1.</t>
+
+    <t> The PCUpd message is defined in <xref target='I-D.ietf-pce-stateful-pce'></xref>
+	and updated as below:</t>
+	
+	<figure>
+	   <artwork><![CDATA[
+<PCUpd Message> ::= <Common Header>
+                    <update-request-list>
+Where:
+   <update-request-list> ::= <update-request>[<update-request-list>]
+
+   <update-request> ::= <SRP>
+                        <LSP>
+                        [<association-list>]
+                        <path>
+						
+Where:  <association-list> ::= <ASSOCIATION> [<association-list>]
+     ]]></artwork>
+	</figure>
+    
+	<t>The PCInitiate message is defined in <xref target='I-D.ietf-pce-pce-initiated-lsp'></xref> 
+	and updated as below:
+	</t>
+	<figure>
+	  <artwork><![CDATA[
+<PCInitiate Message> ::= <Common Header>
+                         <PCE-initiated-lsp-list>
+Where:
+
+   <PCE-initiated-lsp-list> ::= 
+   <PCE-initiated-lsp-request>[<PCE-initiated-lsp-list>]
+
+   <PCE-initiated-lsp-request>::= 
+   (<PCE-initiated-lsp-instantiation>|<PCE-initiated-lsp-deletion>)
+
+   <PCE-initiated-lsp-instantiation> ::= <SRP>
+                                         <LSP>
+                                         <END-POINTS>
+                                         <ERO>
+                                         [<association-list>]
+                                         [<attribute-list>]
+
+Where:  
+<association-list> ::= <ASSOCIATION> [<association-list>]
+	]]></artwork>	  
+	</figure>
+	
+	<t>
+	In case of passive stateful or stateless PCE, the ASSOCIATION Object 
+    is OPTIONAL and MAY be carried in the Path Computation Request 
+   (PCReq) message. 
+   </t>
+   <t>
+    When carried in a PCReq message, the ASSOCIATION Object is used to associate the path 
+   computation request to an association group, the association 
+   might be further informed via PCRpt message in case of passive
+   stateful PCE later or it might be created out of band in case of
+   stateless PCE.    
+   </t>
+   <t>
+   The PCReq message is defined in [RFC5440] and updated in 
+   [I-D.ietf-pce-stateful-pce], it is further updated below for
+   association: 
+   </t>
+   
+ 	<figure>
+	  <artwork><![CDATA[  
+<PCReq Message>::= <Common Header>
+                   [<svec-list>]
+                   <request-list>
+
+Where:
+      <svec-list>::= <SVEC>[<svec-list>]
+      <request-list>::= <request>[<request-list>]
+
+      <request>::= <RP>
+                   <END-POINTS>
+                   [<LSP>]
+                   [<LSPA>]
+                   [<BANDWIDTH>]
+                   [<metric-list>]
+                   [<association-list>]
+                   [<RRO>[<BANDWIDTH>]]
+                   [<IRO>]
+                   [<LOAD-BALANCING>]
+                                         
+Where:
+      <association-list> ::= <ASSOCIATION> [<association-list>]
+   	]]></artwork>	  
+	</figure>
+	<t>
+   Note that LSP object MAY be present for the passive stateful PCE.
+   
+	</t>
+    </section> <!-- Object Encoding -->
+	
+	<section  anchor="Rules" title="Processing Rules">
+
+	<t> 
+	Both a PCC and a PCE can create one or more association groups for an LSP.
+	But a PCE peer cannot add new members for association group created by 
+	another peer. If a 
+	PCE peer does not recognize the ASSOCIATION object, it MUST return a PCErr 
+	message with Error-Type  "Unknown Object" as described in [RFC5440]. If a PCE 
+	peer is unwilling or unable to process the ASSOCIATION object, it MUST return a 
+	PCErr message with the Error-Type "Not supported object" and follow the relevant 
+	procedures described in [RFC5440].
+	</t>
+
+	<t>
+	  The association timeout interval is as a PCC-local value that can be 
+	  operator-configured or computed by the PCC based on local policy and is used in the context
+	  of cleaning up associations on session failure. The association timeout 
+	  must be set to a value no larger than the state timeout interval (defined in 
+         <xref target='I-D.ietf-pce-stateful-pce'></xref>) and larger than the delegation
+          timeout interval (defined in 
+         <xref target='I-D.ietf-pce-stateful-pce'></xref>. 
+	</t> 
+
+	 <t>
+	   When a PCC's PCEP session wih the PCE terminates unexpectedly, the PCC MUST 
+	   wait for the association timeout interval before cleaning up the association. 
+	   If this PCEP session can be re-established before the association timeout 
+	   interval time expires, no action is taken to clean the association created by 
+	  this PCE. During the time window of the redelegation timeout interval and 
+	  the association timeout interval, the PCE, after re-establishing the session,
+	  can also ask for redelegation following the procedure
+	  defined in <xref target='I-D.ietf-pce-stateful-pce'></xref>  and 
+	  <xref target='I-D.ietf-pce-pce-initiated-lsp'></xref>. 
+	  When the association timeout interval timers expires, 
+	  the PCC clears all the associations which are not delegated to any PCEs.
+	 </t>
+   
+	 <t>Upon LSP delegation revocation, the PCC MAY clear the association 
+	 created by the related PCE, but in order to avoid traffic loss, it can perform this 
+	 in a make-before-break fashion, which is the same as what is defined in 
+	 <xref target='I-D.ietf-pce-stateful-pce'>Stateful pce</xref> for handling 
+	 LSP state cleanup.</t>
+   
+	 <t>Error handling for situations for multiple PCE scenarios will be included in 
+	 future versions of this draft.
+	 </t>	
+
+    </section> <!-- Rules  -->
+	
+	</section> <!-- Association Object -->
+	
+
+   
+	<section anchor="IANA-considerations" title="IANA Considerations">
+	  
+  
+        <t>The "PCEP Parameters" registry contains a subregistry "PCEP Objects".  
+		This document request IANA to allocate the values from this registry.</t>
+        <texttable anchor="Object-Code-Points" style="none" suppress-title="true">
+          <ttcol align="center">Object-Class Value &nbsp;</ttcol>
+          <ttcol align="left" width='50%'>Name </ttcol>
+          <ttcol align="left">Reference </ttcol>
+          <c></c><c>&nbsp;&nbsp;&nbsp;&nbsp;</c><c></c>
+          <c>TBD</c><c>Association</c><c>This document</c>
+          <c></c><c>Object-Type</c><c></c>
+          <c></c><c>&nbsp;&nbsp;&nbsp;&nbsp;1: IPv4 </c><c></c>
+		  <c></c><c>&nbsp;&nbsp;&nbsp;&nbsp;2: IPv6 </c><c></c>
+        </texttable>
+   
+
+        <t>This document defines the following new PCEP TLVs:</t>
+
+        <texttable anchor="new-association-TLV-CP" style="none" suppress-title="true">
+          <ttcol align="center" width='20%'>Value</ttcol>
+          <ttcol align="left" width='40%'>Meaning </ttcol>
+          <ttcol align="left" width='40%'>Reference </ttcol>
+          <c>TBD</c><c>&nbsp;Global Association Source</c><c>This document</c>
+          <c>TBD</c><c>&nbsp;Extended Association Id</c><c>This document</c>
+        </texttable>
+
+        <t>This document requests IANA to create a subregistry of the "PCEP Parameters" for 
+		the bits carried in the Flags field of the ASSOCIATION object.  
+		The subregistry is called "ASSOCIATION Flags Field". </t>
+		
+		<t> The field contains 12 bits numbered from bit 0 as the most significant bit.</t>
+		 <texttable anchor="Association-Flags" style="none" suppress-title="true">
+          <ttcol align="left">Bit;</ttcol>
+          <ttcol align="left" width='50%'>Name: Description </ttcol>
+          <ttcol align="left">Reference </ttcol>
+          <c></c><c>&nbsp;&nbsp;&nbsp;&nbsp;</c><c></c>
+          <c>15</c><c> R: Removal</c><c>This document</c>
+        </texttable>
+		
+		
+	</section> <!-- IANA -->
+	
+   <section anchor="Security" title="Security Considerations">
+     
+     <t> The security considerations described in <xref target='I-D.ietf-pce-stateful-pce'></xref> 
+   apply to the extensions described in this document.  Additional
+   considerations related to a malicious PCE are introduced, as the PCE may now create additional state
+   on the PCC through the creation of association groups. 
+
+  </t> 
+   </section>
+
+   <section anchor="Acknowledgements" title="Acknowledgements">
+     <t>We would like to thank Yuji Kamite and Joshua George for
+     their contributions to this document. Also Thank Venugopal Reddy and 
+	 Cyril Margaria for their useful comments.</t>
+    </section>
+	
+   <section anchor="Contributor" title="Contributors">
+    <t>
+	Dhruv Dhody<vspace blankLines='0'/>
+    Huawei Technologies<vspace blankLines='0'/>
+    Divyashree Techno Park, Whitefield<vspace blankLines='0'/>
+    Bangalore, Karnataka  560037  <vspace blankLines='0'/>
+    India <vspace blankLines='0'/>
+    Email: dhruv.ietf@gmail.com<vspace blankLines='0'/>
+    </t>
+	
+	<t> </t>
+	
+    </section><!-- Contributor -->
+	
+  </middle>
+
+  <back>
+    <references title="Normative References">
+      <?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml"?>
+      <?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.5440.xml"?>
+      <?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.6780.xml"?>
+    	<?rfc include="reference.I-D.ietf-pce-stateful-pce"?>
+	<?rfc include="reference.I-D.ietf-pce-pce-initiated-lsp"?>
+   </references>
+
+   <references title="Informative References">
+     <?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.4657.xml"?>
+   </references>
+  </back>
+</rfc>
