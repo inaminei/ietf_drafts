@@ -1333,9 +1333,9 @@ Where:
     <section anchor="Object-Formats" title="Object Formats">
       <t>The PCEP objects defined in this document are compliant with the PCEP
       object format defined in <xref target="RFC5440"/>. The P flag and the I
-      flag of the PCEP objects defined in this document MUST be set to 0
-      on transmission and SHOULD be ignored on receipt since these flags are
-      exclusively related to path computation requests.</t>
+      flag of the PCEP objects defined in the current document MUST be set to 0
+      on transmission and SHOULD be ignored on receipt since the P and I 
+      flags are exclusively related to path computation requests.</t>
 
       <section anchor="Open-Object-Format" title="OPEN Object">
         <t>This document defines one new optional TLVs for use in the OPEN
