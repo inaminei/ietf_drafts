@@ -188,9 +188,9 @@
         with updated attributes.</t>
 	
 	<t hangText="SRP-ID-numbert:">a number used to correlate errors and
-	state reports to LSP Update Requests. It is carried in the SRP (Stateful
-	PCE Request Parameters) Object described in (see 
-	<xref target="SRP-Object-Format"/>).
+	LSP State Reports to LSP Update Requests. It is carried in the 
+	SRP (Stateful PCE Request Parameters) Object described in 
+	<xref target="SRP-Object-Format"/>.
 
         <t hangText="LSP State Database:">information about all LSPs and their
         attributes.</t>
