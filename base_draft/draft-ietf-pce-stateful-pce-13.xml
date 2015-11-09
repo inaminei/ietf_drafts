@@ -11,7 +11,7 @@
 <?rfc inline="yes"?>
 <?rfc compact="yes"?>
 <?rfc subcompact="no"?>
-<rfc category="std" docName="draft-ietf-pce-stateful-pce-12" ipr="trust200902">
+<rfc category="std" docName="draft-ietf-pce-stateful-pce-13" ipr="trust200902">
   <front>
     <title abbrev="PCEP Extensions for Stateful PCE">
     PCEP Extensions for Stateful PCE</title>
@@ -63,7 +63,7 @@
         <email>robert.varga@pantheon.sk</email>
       </address>
     </author>
-    <date day="19" month="October" year="2015" />
+    <date day="11" month="November" year="2015" />
 
     <workgroup>PCE Working Group</workgroup>
 
@@ -191,6 +191,7 @@
 	LSP State Reports to LSP Update Requests. It is carried in the 
 	SRP (Stateful PCE Request Parameters) Object described in 
 	<xref target="SRP-Object-Format"/>.
+	</t> 
 
         <t hangText="LSP State Database:">information about all LSPs and their
         attributes.</t>
@@ -1077,10 +1078,14 @@ Where:
                       <LSP>
                       <path>
  Where:
-   <path>::= <RRO><attribute-list>[<RRO>]
+   <path>::= <intended_path><attribute-list>[<actual_path>]
 
 Where:
    <attribute-list> is defined in [RFC5440] and extended by PCEP extensions.
+   <intended_path> is represented by the ERO object defined in section 
+   7.9 of [RFC5440].
+   <actual_path> is represented by the RRO object defined in section 
+   7.10 of [RFC5440]. 
           ]]></artwork>
         </figure>
 
@@ -1114,9 +1119,11 @@ Where:
         include the LSP-ERROR-TLV (<xref target="LSP-err-code-tlv"/>) with the
         relevant LSP Error Code to report the error to the PCE. </t>
 
-        <t>The RRO SHOULD be included in PCrpt by the PCC when the 
+        <t>The actual path, represented by the RRO, 
+	SHOULD be included in PCrpt by the PCC when the 
 	path is up or active, but MAY be
-        omitted if the path is down due to a signaling error or another failure. </t>
+        omitted if the path is down due to a signaling error or another 
+	failure. </t>
 		
 	<t> A PCE may choose to implement a limit on the resources a single PCC can occupy.
 	If a PCRpt is received that causes the PCE to exceed this limit, it 
@@ -1146,10 +1153,12 @@ Where:
                         <LSP>
                         <path>
 Where:
-   <path>::= <ERO><attribute-list>
+   <path>::= <intended_path><attribute-list>
 
 Where:
    <attribute-list> is defined in [RFC5440] and extended by PCEP extensions.
+   <intended_path> is represented by the ERO object defined in section 
+   7.9 of [RFC5440]. 
           ]]></artwork>
         </figure>
 
@@ -1157,13 +1166,14 @@ Where:
         LSP Update Request in the PCUpd message: the SRP Object (see <xref
         target="SRP-Object-Format"/>), the LSP object (see <xref
         target="LSP-Object-Format"/>) and the ERO object (as defined in <xref
-        target="RFC5440"/>. If the SRP object is missing, the receiving PCC MUST
+        target="RFC5440"/>, which represents the intended path. 
+	If the SRP object is missing, the receiving PCC MUST
         send a PCErr message with Error-type=6 (Mandatory Object missing) and
         Error-value=10 (SRP object missing). If the LSP object is missing,
         the receiving PCC MUST send a PCErr message with Error-type=6 (Mandatory
         Object missing) and Error-value=8 (LSP object missing). If the ERO
         object is missing, the receiving PCC MUST send a PCErr message with
-        Error-type=6 (Mandatory Object missing) and Error-value=9(ERO
+        Error-type=6 (Mandatory Object missing) and Error-value=9 (ERO
         object missing).
         </t>
 
@@ -1908,7 +1918,7 @@ Where:
           <t hangText="    6">Mandatory Object missing
           <list style="hanging" hangIndent="17">
             <t hangText=" Error-value=8:">LSP Object missing</t>
-            <t hangText=" Error-value=9:">xRO Object missing</t>
+            <t hangText=" Error-value=9:">ERO Object missing</t>
             <t hangText=" Error-value=10:">SRP Object missing</t>
             <t hangText=" Error-value=11:">LSP-IDENTIFIERS TLV missing</t>
           </list>
