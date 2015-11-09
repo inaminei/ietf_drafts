@@ -150,23 +150,26 @@
         to modify a subset of LSP parameters on one or more PCC's LSPs. LSPs are
         delegated from a PCC to a PCE, and are referred to as delegated LSPs.
         The PCC that owns the PCE state for the LSP has the right to delegate
-        it. An LSP is owned by a single PCC at any given point in time. For intra-domain
-        LSPs, this PCC should be the LSP head end.
+        it. An LSP is owned by a single PCC at any given point in time. 
+	For intra-domain LSPs, this PCC should be the LSP head end.
         </t>
 
         <t hangText="Revocation:">an operation performed by a PCC on a
         previously delegated LSP. Revocation revokes the rights granted to the
         PCE in the delegation operation. </t>
 
-        <t hangText="Redelegation Timeout Interval:">the period of time a PCE waits 
+        <t hangText="Redelegation Timeout Interval:">the period of time 
+	a PCE waits 
 	for, when a PCEP session is terminated, before revoking LSP delegation 
-	to a PCE and attempting to redelegate LSPs associated with the terminated 
+	to a PCE and attempting to redelegate LSPs associated with the
+	terminated 
 	PCEP session to an alternate PCE. The Redelegation
         Timeout Interval is a PCC-local value that can be either
         operator-configured or dynamically computed by the PCC based on local
         policy. </t>
 
-        <t hangText="State Timeout Interval:">the period of time a PCE waits for, 
+        <t hangText="State Timeout Interval:">the period of time a PCE waits 
+	for, 
 	when a PCEP session is terminated, before flushing LSP state associated 
 	with that PCEP session and reverting to operator-defined default 
 	parameters or behaviors. The State
@@ -175,13 +178,19 @@
         policy. </t>
 
         <t hangText="LSP State Report:">an operation to send LSP state
-        (Operational / Admin Status, LSP attributes configured at the PCC and set by a PCE,
+        (Operational / Admin Status, LSP attributes configured at the 
+	PCC and set by a PCE,
         etc.) from a PCC to a PCE. </t>
 
-        <t hangText="LSP Update Request:">an operation where an Active Stateful PCE
-        requests a
+        <t hangText="LSP Update Request:">an operation where an Active 
+	Stateful PCE requests a
         PCC to update one or more attributes of an LSP and to re-signal the LSP
         with updated attributes.</t>
+	
+	<t hangText="SRP-ID-numbert:">a number used to correlate errors and
+	state reports to LSP Update Requests. It is carried in the SRP (Stateful
+	PCE Request Parameters) Object described in (see 
+	<xref target="SRP-Object-Format"/>).
 
         <t hangText="LSP State Database:">information about all LSPs and their
         attributes.</t>
