@@ -159,7 +159,7 @@
         PCE in the delegation operation. </t>
 
         <t hangText="Redelegation Timeout Interval:">the period of time 
-	a PCE waits 
+	a PCC waits 
 	for, when a PCEP session is terminated, before revoking LSP delegation 
 	to a PCE and attempting to redelegate LSPs associated with the
 	terminated 
@@ -1119,7 +1119,7 @@ Where:
         include the LSP-ERROR-TLV (<xref target="LSP-err-code-tlv"/>) with the
         relevant LSP Error Code to report the error to the PCE. </t>
 
-        <t>The actual path, represented by the RRO, 
+        <t>The actual path, represented by the RRO object, 
 	SHOULD be included in PCrpt by the PCC when the 
 	path is up or active, but MAY be
         omitted if the path is down due to a signaling error or another 
@@ -1720,15 +1720,14 @@ Where:
           operator in a PCC's configuration. If the operator does not specify a
           unique symbolic name for a path, the PCC MUST auto-generate one.</t>
 
-          <t>The SYMBOLIC-PATH-NAME TLV MUST be included in the LSP State Report
+          <t>The SYMBOLIC-PATH-NAME TLV MUST be included in the LSP object in 
+	  the LSP State Report (PCRpt) message
           when during a given PCEP session an LSP is first reported to a PCE. A
           PCC sends to a PCE the first LSP State Report either during State
           Synchronization, or when a new LSP is configured at the PCC. The
-          symbolic path name MAY be included in subsequent LSP State Reports for
+          symbolic path name MAY be included in the LSP object in 
+	  subsequent LSP State Reports for
           the LSP.</t>
-
-          <t> The SYMBOLIC-PATH-NAME TLV MAY appear as a TLV in both the LSP
-          Object and the SRP Object. </t>
 
           <t>The format of the SYMBOLIC-PATH-NAME TLV is shown in the following
           figure:</t>
