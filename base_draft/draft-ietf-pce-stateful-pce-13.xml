@@ -140,7 +140,7 @@
         from PCCs to optimize path computations.It does not actively update LSP
         state. A PCC maintains synchronization with the PCE.</t>
 
-        <t hangText="Active Stateful PCE:">an Active Stateful PCE that 
+        <t hangText="Active Stateful PCE:">a PCE that 
 	may issue recommendations to the network.For
         example, an Active Stateful PCE may utilize the Delegation mechanism to
         update LSP parameters in those PCCs that delegated control over their
