@@ -517,6 +517,67 @@
 
       </section>
 
+      <section anchor="PCE-discovery"
+       title="IGP Extensions for Sateful PCE Capabilities Advertisement ">
+
+	<t> 
+	  When PCCs are LSRs participating in the IGP (OSPF or IS-IS), and PCEs
+	  are either LSRs or servers also participating in the IGP, an
+	  effective mechanism for PCE discovery within an IGP routing domain
+	  consists of utilizing IGP advertisements.  Extensions for the advertisement 
+	  of PCE Discovery Information are defined for OSPF and for 
+	  IS-IS  in <xref target="RFC5088"/> and 
+	  <xref target="RFC5089"/> respectively.  
+	</t> 
+
+	<t> 
+	  The PCE-CAP-FLAGS sub-TLV, defined in [RFC5089], 
+	  is an optional sub-TLV used to advertise
+	  PCE capabilities.  It MAY be present within the PCED sub-TLV carried
+	  by OSPF or IS-IS. <xref target="RFC5088"/> and 
+	  <xref target="RFC5089"/> provide the description
+	  and processing rules for this sub-TLV when carried within OSPF and
+	  IS-IS, respectively.
+	</t> 
+
+	<t> 
+	  The format of the PCE-CAP-FLAGS sub-TLV is included below for easy reference: 
+
+          <list style= "hanging">
+            <t hangText="Type:">5 </t> 
+	    <t hangText="Length:">Multiple of 4.</t> 
+	    <t hangText="Value:">This contains an array of units of 
+	      32 bit flags with the most significant bit as 0.
+	      Each bit represents one PCE capability.</t> 
+          </list>
+
+	</t> 
+	<t>
+	  PCE capability bits are defined in [RFC5088].  This document defines
+	  new capability bits for the stateful PCE as follows:
+	</t> 
+
+	  <texttable anchor="PCE-cap-flags" style="none" suppress-title="true">
+            <ttcol align="left" width='30%'>Bit</ttcol>
+            <ttcol align="left" width='70%'>Capability </ttcol>
+
+            <c>TBD</c><c>&nbsp;Active Stateful PCE capability </c>
+            <c>TBD</c><c>&nbsp;Passive Stateful PCE capability</c>
+          </texttable>
+
+	<t> 
+	  Note that while active and passive stateful PCE capabilities may be
+	  advertised during discovery, PCEP Speakers that wish to use stateful
+	  PCEP MUST negotiate stateful PCEP capabilities during PCEP session
+	  setup, as specified in the current document. 
+	  A PCC MAY initiate stateful PCEP capability negotiation at PCEP
+	  session setup even if it did not receive any IGP PCE capability
+	  advertisements.
+	</t> 
+
+
+      </section> 
+
       <section anchor="Synchronization" title="State Synchronization">
         <t>The purpose of State Synchronization is to provide a
         checkpoint-in-time state replica of a PCC's LSP state in a PCE. State
@@ -1844,6 +1905,23 @@ Where:
       protocol elements defined in this document. Values shown here are
       suggested for use by IANA.</t>
 
+      <section anchor="PCE-disco-IANA" 
+	       title="PCE Capabilities in IGP Advertisements">
+	<t> 
+	IANA is requested to allocate new bits in "PCE Capability Flags"
+	registry for stateful PCE capability as follows:
+	</t> 
+
+	  <texttable anchor="PCE-cap-flags-values" style="none" suppress-title="true">
+            <ttcol align="center" width='20%'>Bit</ttcol>
+            <ttcol align="left" width='30%'>Meaning </ttcol>
+	    <ttcol align="left" width='50%'>Reference </ttcol>
+            <c>11</c><c>&nbsp;Active Stateful PCE capability </c><c>This document</c>
+            <c>12</c><c>&nbsp;Passive Stateful PCE capability</c><c>This document</c>
+          </texttable>
+
+      </section> 
+
       <section anchor="PCEP-Msg-Codepoints" title="PCEP Messages">
         <t>This document defines the following new PCEP messages:</t>
 
@@ -2242,6 +2320,10 @@ Where:
     <section anchor="Acknowledgements" title="Acknowledgements">
       <t>We would like to thank Adrian Farrel, Cyril Margaria and Ramon Casellas
       for their contributions to this document.</t>
+
+      <t> We would like to acknowledge the contribution of Siva Sivabalan, 
+      Xian Zhang and Jan Medved for the IGP extensions for Stateful PCE
+      Advertisementss.</t> 
 
       <t>We would like to thank Shane Amante, Julien Meuric, Kohei Shiomoto,
       Paul Schultz and Raveendra Torvi for their comments and suggestions.
