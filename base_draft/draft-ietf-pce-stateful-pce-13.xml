@@ -395,8 +395,6 @@
       <t> Similarly to <xref target="RFC5440"/>, no assumption is made about the 
       discovery method used by a PCC to discover a set of PCEs (e.g., via static 
       configuration or dynamic discovery) and on the algorithm used to select a PCE. 
-      Extensions needed to support autodiscovery will be defined in a separate
-      document. 
       </t> 
 
     </section>
