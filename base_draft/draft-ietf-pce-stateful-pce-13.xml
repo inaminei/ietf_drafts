@@ -744,9 +744,11 @@
           State Report to 1.  If the PCE does not accept the LSP Delegation, it
           MUST immediately respond with an empty LSP Update Request which has
           the Delegate flag set to 0.  If the PCE accepts the LSP Delegation, it
-          confirms this when it sends the first LSP Update Request for the
-          delegated LSP to the PCC by setting the Delegate flag to 1 (note that
-          this may occur at a later time).</t>
+	  MUST set the Delegate flag to 1 when it sends an LSP Update Request for the 
+	  delegated LSP (note that this may occur at a later time). The PCE MAY also
+	  immediately acknowledge a delegation 
+	  by sending an empty LSP Update Request which has the Delegate
+	  flag set to 0. </t>
 
           <t>The delegation sequence is shown in <xref
           target="lsp-delegate"/>.</t>
@@ -853,11 +855,15 @@
         </section> <!-- Revoking a delegation --> 
 
         <section anchor="LSP-RETURN" title="Returning a Delegation">
-          <t>A PCE that no longer wishes to update an LSP's parameters SHOULD
+          <t>
+	  In order to keep a delegation, a PCE MUST set the Delegate flag to 1 on
+          each LSP Update Request sent to the PCC.
+	  A PCE that no longer wishes to update an LSP's parameters SHOULD
           return the LSP delegation back to the PCC by sending an empty LSP
-          Update Request which has the Delegate flag set to 0. Note that in
-          order to keep a delegation, the PCE MUST set the Delegate flag to 1 on
-          each LSP Update Request sent to the PCC.</t>
+          Update Request which has the Delegate flag set to 0. If a PCC receives
+	  a non-empty LSP Update Request with the Delegate flag set to 0, it MUST 
+	  treat this as a delegation return. 
+	 </t>
 
           <figure anchor="lsp-return" title="Returning a Delegation">
             <artwork><![CDATA[
