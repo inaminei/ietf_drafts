@@ -468,6 +468,18 @@
         </texttable>
       </section>
 
+      <section anchor="Error-reporting" title="Error Reporting">
+	<t> 
+	 Error reporting is done using the procedures defined in 
+	 <xref target="RFC5440"/>, and reusing the applicable error types
+	 and error values
+	 of <xref target="RFC5440"/> wherever appropriate. The current document
+	 defines new error values for several error types to cover failures
+	 specific to stateful PCE. 
+	</t> 
+
+      </section> 
+
       <section anchor="Capability" title="Capability Advertisement">
         <t>During PCEP Initialization Phase, PCEP Speakers (PCE or PCC)
         advertise their support of stateful PCEP extensions. A PCEP Speaker includes
