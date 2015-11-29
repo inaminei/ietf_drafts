@@ -630,15 +630,17 @@
 
         <t>The PCE does not send positive acknowledgements for properly received
         synchronization messages. It MUST respond with a PCErr message with
-		error-type 20 (LSP State Synchronization Error) and error-value 1
+	error-type 20 (LSP State Synchronization Error) and error-value 1
         (indicating an error in processing the PCRpt) (see <xref target="PCEP-Error-Object"/>) 
-		if it encounters a problem with the LSP State Report it received from the PCC and 
-		it MUST terminate the session.</t>
+	if it encounters a problem with the LSP State Report it received from the PCC and 
+	it MUST terminate the session.</t>
 		
-		<t> A PCE implementing a limit on the resources a single PCC can occupy, 
-		MUST send a PCErr  message with error-type 19 (invalid operation) and error-value 4 
-	   (indicating resource limit exceeded) in response to the PCRpt message triggering 
-	   this condition in the synchronization phase and MUST terminate the session. </t> 
+	<t> A PCE implementing a limit on the resources a single PCC can occupy, 
+	MUST send a PCntf message with Notification Type to be allocated
+	by IANA (Stateful PCE resource limit exceeded) and Notification Value to be 
+	allocated by IANA (Entering resource limit exceeded state) 
+	in response to the PCRpt message triggering 
+	this condition in the synchronization phase and MUST terminate the session. </t> 
 
         <t>The successful State Synchronization sequence is shown in <xref
         target="Synchro-success"/>.</t>
@@ -1202,11 +1204,13 @@ Where:
         omitted if the path is down due to a signaling error or another 
 	failure. </t>
 		
-	<t> A PCE may choose to implement a limit on the resources a single PCC can occupy.
-	If a PCRpt is received that causes the PCE to exceed this limit, it 
-	MUST send a PCErr  message with error-type 19 (invalid operation) and error-value 4 
-	(indicating resource limit exceeded) in response to the PCRpt message triggering 
-	this condition and MAY terminate the session.</t> 
+	<t> A PCE may choose to implement a limit on the resources a single PCC can 
+	occupy.
+	If a PCRpt is received that causes the PCE to exceed this limit, the PCE
+	MUST notify the PCC using a PCntf message with Notification Type to be allocated
+	by IANA (Stateful PCE resource limit exceeded) and Notification Value to be 
+	allocated by IANA (Entering resource limit exceeded state) and MAY 
+	terminate the session. </t> 
 	   
       </section> <!-- PCRpt message --> 
 
@@ -2028,10 +2032,6 @@ Where:
 
             <t hangText=" Error-value=3:">Attempted LSP Update Request for an
             LSP identified by an unknown PLSP-ID.</t>
-			
-	    <t hangText=" Error-value=4:">A PCE indicates to a PCC that it has exceeded
-	    the resource limit allocated for its state, and thus it cannot
-            accept and process its LSP State Report message.</t>
 
 	    <t hangText=" Error-value=5:">Attempted LSP State Report if active
             stateful PCE capability was not advertised.</t>
@@ -2054,6 +2054,29 @@ Where:
 
         </t>
       </section> <!--PCEP error object --> 
+
+  <section anchor="PCEP-PCNTF" title="Notification Object">
+    
+    <t> IANA is requested to allocate new Notification Types and 
+    Notification Values in the "PCEP Notification Object" registry as follows:
+
+ <vspace blankLines="1" />
+
+        <?rfc subcompact="yes"?>
+        <list style="hanging" hangIndent="13">
+
+          <t hangText=" Notification-Type">Meaning</t>
+
+          <t hangText="    4">Stateful PCE resource limit exceeded
+          <list style="hanging" hangIndent="25">
+            <t hangText=" Notification-value=1:">Entering resource limit exceeded state</t>
+           <t hangText=" Notification-value=2:">Exiting resource limit exceeded state</t>
+          </list>
+          </t>
+	</list> 
+    </t> 
+
+  </section> 	  
 
       <section anchor="PCEP-TLV-Type-Indicators" title="PCEP TLV Type Indicators">
         <t>This document defines the following new PCEP TLVs:</t>
@@ -2318,10 +2341,11 @@ Where:
         <t>A stateful session also results in an increased attack surface by placing
         a requirement for the PCE to keep an LSP state replica for each PCC. It
         is RECOMMENDED that PCE implementations provide a limit on resources a
-        single PCC can occupy. A PCE implementing such a limit MUST send a PCErr 
-		message with error-type 19 (invalid operation) and error-value 4 (indicating
-		resource limit exceeded) upon receiving an LSP state report causing it to 
-		exceed this threshold.</t>
+        single PCC can occupy. A PCE implementing such a limit MUST send a PCNtf
+	message with notification-type to be assigned by IANA  (Stateful PCE resource limit
+	exceeded) and notification-value to be assigned by IANA (Entering resource limit 
+	exceeded state) upon receiving an LSP state report causing it to 
+	exceed this threshold.</t>
 
         <t>Delegation of LSPs can create further strain on PCE resources and a
         PCE implementation MAY preemptively give back delegations if it finds
