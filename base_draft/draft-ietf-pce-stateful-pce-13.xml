@@ -2357,20 +2357,47 @@ Where:
 
     </section>
 
+  <section anchor="Contributing-authors" title="Contributing Authors">
+   
+    <t> 
+   Xian Zhang<vspace blankLines='0'/>
+   Huawei Technology<vspace blankLines='0'/>
+   F3-5-B R&amp;D Center<vspace blankLines='0'/>
+   Huawei Industrial Base, Bantian, Longgang District<vspace blankLines='0'/>
+   Shenzhen, Guangdong  518129<vspace blankLines='0'/>
+   P.R.China<vspace blankLines='0'/>
+   EMail: zhang.xian@huawei.com<vspace blankLines='0'/>
+    </t>
+
+    <t>
+   Dhruv Dhody<vspace blankLines='0'/>
+   Huawei Technology<vspace blankLines='0'/>
+   Leela Palace<vspace blankLines='0'/>
+   Bangalore, Karnataka 560008<vspace blankLines='0'/>
+   INDIA<vspace blankLines='0'/>
+   EMail: dhruv.dhody@huawei.com<vspace blankLines='0'/>
+    </t>
+
+  <t>
+   Siva Sivabalan<vspace blankLines='0'/>
+   Cisco Systems, Inc.<vspace blankLines='0'/>
+   2000 Innovation Drive<vspace blankLines='0'/>
+   Kanata, Ontario  K2K 3E8<vspace blankLines='0'/>
+   Canada<vspace blankLines='0'/>
+   EMail: msiva@cisco.com<vspace blankLines='0'/>
+    </t>
+  </section> 
+
     <section anchor="Acknowledgements" title="Acknowledgements">
       <t>We would like to thank Adrian Farrel, Cyril Margaria and Ramon Casellas
       for their contributions to this document.</t>
 
-      <t> We would like to acknowledge the contribution of Siva Sivabalan, 
-      Xian Zhang and Jan Medved for the IGP extensions for Stateful PCE
-      Advertisementss.</t> 
-
       <t>We would like to thank Shane Amante, Julien Meuric, Kohei Shiomoto,
       Paul Schultz and Raveendra Torvi for their comments and suggestions.
-      Thanks also to Jon Hardwick, Dhruv Dhoddy, Oscar Gonzales
+      Thanks also to Jon Hardwick, Oscar Gonzales
       de Dios, Tomas Janciga, Stefan Kobza, Kexin Tang, Matej Spanik, Jon
-      Parker, Marek Zavodsky, Ambrose Kwong, Ashwin Sampath, Calvin Ying and
-      Xian Zhang for helpful comments and discussions.</t>
+      Parker, Marek Zavodsky, Ambrose Kwong, Ashwin Sampath and Calvin Ying
+      for helpful comments and discussions.</t>
     </section>
   </middle>
 
