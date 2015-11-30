@@ -63,7 +63,7 @@
         <email>robert.varga@pantheon.sk</email>
       </address>
     </author>
-    <date day="11" month="November" year="2015" />
+    <date day="1" month="December" year="2015" />
 
     <workgroup>PCE Working Group</workgroup>
 
@@ -137,7 +137,7 @@
 
         <t hangText="Passive Stateful PCE:">a PCE that uses LSP state 
 	information learned
-        from PCCs to optimize path computations.It does not actively update LSP
+        from PCCs to optimize path computations. It does not actively update LSP
         state. A PCC maintains synchronization with the PCE.</t>
 
         <t hangText="Active Stateful PCE:">a PCE that 
@@ -187,7 +187,7 @@
         PCC to update one or more attributes of an LSP and to re-signal the LSP
         with updated attributes.</t>
 	
-	<t hangText="SRP-ID-numbert:">a number used to correlate errors and
+	<t hangText="SRP-ID-number:">a number used to correlate errors and
 	LSP State Reports to LSP Update Requests. It is carried in the 
 	SRP (Stateful PCE Request Parameters) Object described in 
 	<xref target="SRP-Object-Format"/>.
@@ -528,7 +528,7 @@
       </section>
 
       <section anchor="PCE-discovery"
-       title="IGP Extensions for Sateful PCE Capabilities Advertisement ">
+       title="IGP Extensions for Stateful PCE Capabilities Advertisement ">
 
 	<t> 
 	  When PCCs are LSRs participating in the IGP (OSPF or IS-IS), and PCEs
@@ -752,10 +752,11 @@
           MUST immediately respond with an empty LSP Update Request which has
           the Delegate flag set to 0.  If the PCE accepts the LSP Delegation, it
 	  MUST set the Delegate flag to 1 when it sends an LSP Update Request for the 
-	  delegated LSP (note that this may occur at a later time). The PCE MAY also
+	  delegated LSP (note that this may occur at a later time). The PCE 
+	  MAY also
 	  immediately acknowledge a delegation 
 	  by sending an empty LSP Update Request which has the Delegate
-	  flag set to 0. </t>
+	  flag set to 1. </t>
 
           <t>The delegation sequence is shown in <xref
           target="lsp-delegate"/>.</t>
@@ -1095,7 +1096,8 @@
 
           <t>Once an LSP is up, the PCC MUST send an LSP State Report (PCRpt
           message) to the PCE, indicating that the LSP's status is 'Up'. If the
-          LSP could not be set up, the PCC MuST send an LSP State Report indicating
+          LSP could not be set up, the PCC MUST send an LSP State Report 
+	  indicating
           that the LSP is 'Down' and stating the cause of the failure. A PCC MAY
           compress LSP State Reports to only reflect the most up to
           date state, as discussed in the previous section.</t>
@@ -1165,11 +1167,12 @@ Where:
    <path>::= <intended_path><attribute-list>[<actual_path>]
 
 Where:
-   <attribute-list> is defined in [RFC5440] and extended by PCEP extensions.
-   <intended_path> is represented by the ERO object defined in section 
-   7.9 of [RFC5440].
-   <actual_path> is represented by the RRO object defined in section 
-   7.10 of [RFC5440]. 
+   <intended_path> is represented by the ERO object defined in 
+   section 7.9 of [RFC5440].
+   <attribute-list> is defined in [RFC5440] and extended by 
+   PCEP extensions.
+   <actual_path> is represented by the RRO object defined in 
+   section 7.10 of [RFC5440]. 
           ]]></artwork>
         </figure>
 
@@ -1245,9 +1248,10 @@ Where:
    <path>::= <intended_path><attribute-list>
 
 Where:
-   <attribute-list> is defined in [RFC5440] and extended by PCEP extensions.
-   <intended_path> is represented by the ERO object defined in section 
-   7.9 of [RFC5440]. 
+   <intended_path> is represented by the ERO object defined in 
+   section 7.9 of [RFC5440].    
+   <attribute-list> is defined in [RFC5440] and extended by 
+   PCEP extensions.
           ]]></artwork>
         </figure>
 
@@ -1668,7 +1672,7 @@ Where:
           IPv6.</t>
 
           <t> It is the responsibility of the PCC to send to the PCE the
-          identifiers for each RSVP incarnation of the tunnel. For exmple, in a
+          identifiers for each RSVP incarnation of the tunnel. For example, in a
           make-before-break scenario, the PCC MUST send a separate PCRpt for the
           old and for the reoptimized paths, and explicitly report removal of
           any of these paths using the R bit in the LSP object.</t>
@@ -1981,7 +1985,7 @@ Where:
 
       <section anchor="LSP-Object-CP" title="LSP Object">
         <t>This document requests that a new sub-registry, named 
-	"LSP ObjectFlag Field", is created within the "Path Computation 
+	"LSP Object Flag Field", is created within the "Path Computation 
 	Element Protocol (PCEP) Numbers" registry to manage the Flag 
 	field of the LSP object.New values are to be assigned by Standards
         Action <xref target="RFC5226"/>. Each bit should be tracked with the
@@ -2438,8 +2442,7 @@ Where:
       <?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.5226.xml"?>
       <?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.5394.xml"?>
       <?rfc include="reference.I-D.ietf-pce-gmpls-pcep-extensions"?>
-      <?rfc include="reference.I-D.sivabalan-pce-disco-stateful"?>
-	  <?rfc include="reference.I-D.ietf-pce-stateful-sync-optimizations"?>
+      <?rfc include="reference.I-D.ietf-pce-stateful-sync-optimizations"?>
       <?rfc include="reference.I-D.ietf-pce-stateful-pce-app"?>
 
       <reference anchor="MXMN-TE" target="">
