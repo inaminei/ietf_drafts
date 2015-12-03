@@ -1207,7 +1207,7 @@ Where:
         relevant LSP Error Code to report the error to the PCE. </t>
 
         <t>The actual path, represented by the RRO object, 
-	SHOULD be included in PCrpt by the PCC when the 
+	SHOULD be included in PCRpt by the PCC when the 
 	path is up or active, but MAY be
         omitted if the path is down due to a signaling error or another 
 	failure. </t>
@@ -1659,7 +1659,7 @@ Where:
         <t> TLVs that may be included in the LSP Object are described
         in the following sections. </t>
 
-        <section anchor="LSP-Identifiers-TLVs" title="LSP Identifiers TLVs">
+        <section anchor="LSP-Identifiers-TLVs" title="LSP-IDENTIFIERS TLVs">
 
           <t> The LSP-IDENTIFIERS TLV MUST be included in the LSP object in
           PCRpt messages for RSVP-signaled LSPs.  If the TLV is missing, the PCE
@@ -1787,19 +1787,16 @@ Where:
             Tunnel ID' identifier defined in <xref target="RFC3209"/>, Section
             4.6.1.2 for the LSP_TUNNEL_IPv6 Session Object.</t>
 			
-			<t hangText="IPv6 Tunnel Endpoint Address:"> contains the egress node's 
-			IPv6 address, as defined in <xref target="RFC3209"/>, Section
+	    <t hangText="IPv6 Tunnel Endpoint Address:"> contains the 
+	    egress node's 
+	    IPv6 address, as defined in <xref target="RFC3209"/>, Section
             4.6.1.2 for the LSP_TUNNEL_IPv6 Session Object.</t>
           </list>
           </t>
 
 	  <t> 
-	    Tunnel ID remains constant over the
-            life time of a tunnel. However, when Global Path Protection or
-            Global Default Restoration is used, both the primary and secondary
-            LSPs have their own Tunnel IDs. A PCC MUST report a change in Tunnel
-            ID when traffic switches over from primary LSP to secondary LSP (or
-            vice versa)
+	    THe Tunnel ID remains constant over the
+            life time of a tunnel.
 	  </t> 
 
         </section> <!--LSP identifiers TLV --> 
@@ -1839,9 +1836,12 @@ Where:
             ]]></artwork>
           </figure>
 
-          <t>The type (16 bits) of the TLV is to be assigned by IANA.
-	  The length field is 16 bit-long and has a variable length
-	  which MUST be greater than 0.</t>
+          <t>Type (16 bits): to be assigned by IANA.</t> 
+	  <t>Length (16 bits): indicates the total length of the 
+	  TLV in octets and MUST be greater than 0. The TLV MUST 
+	  be zero-padded so that the TLV is 4-octet aligned. </t>
+	  <t>Symbolic Path Name (variable): symbolic name for the LSP,
+	  unique in the PCC.</t>
 
         </section> <!--LSP symbolic name --> 
 
@@ -1921,10 +1921,13 @@ Where:
             ]]></artwork>
           </figure>
 
-          <t>The type (16 bits) of the TLV is to be assigned by IANA.
-	  The length field is 16 bit-long and has a variable length.
-          The value contains the RSVP ERROR_SPEC or USER_ERROR_SPEC object,
-          including the object header. </t>
+          <t>Type (16 bits):to be assigned by IANA.</t> 
+	  <t>Length (16 bits): indicates the total length of the 
+	  TLV in octets. The TLV MUST be zero-padded so that the 
+	  TLV is 4-octet aligned.</t> 
+	  <t>Value (variable): contains the 
+	  RSVP ERROR_SPEC or USER_ERROR_SPEC Object: as specified in 
+	  [RFC2205] and [RFC5284], including the object header. </t>
 
         </section> <!--RSVP error spec TLV --> 
 
